@@ -83,70 +83,120 @@ subroutine computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
 		Eneg1,Eneg2,Eneg3,Eneg4)
 	call VanLeerF(rho,u,v,p,Fpos1,Fpos2,Fpos3,Fpos4,& 
 		Fneg1,Fneg2,Fneg3,Fneg4)
+	
+	if (npx0 .ne. 1) then
+		call check_x2d(Epos1)
+		call check_x2d(Epos2)
+		call check_x2d(Epos3)
+		call check_x2d(Epos4)
 
-	call check_xy2d(Epos1)
-	call check_xy2d(Epos2)
-	call check_xy2d(Epos3)
-	call check_xy2d(Epos4)
+		call check_x2d(Eneg1)
+		call check_x2d(Eneg2)
+		call check_x2d(Eneg3)
+		call check_x2d(Eneg4)
 
-	call check_xy2d(Eneg1)
-	call check_xy2d(Eneg2)
-	call check_xy2d(Eneg3)
-	call check_xy2d(Eneg4)
+		do j=1,ny
+			call Du2Dx_PADE4(Epos1(:,j),d2f_Epos1(:,j))
+			call Du2Dx_PADE4(Eneg1(:,j),d2f_Eneg1(:,j))
+			call DuDx_UCC_UpWind(Epos1(:,j),d2f_Epos1(:,j),df_Epos1(:,j))
+			call DuDx_UCC_DownWind(Eneg1(:,j),d2f_Eneg1(:,j),df_Eneg1(:,j))
 
-	do j=1,ny
-		call Du2Dx_PADE4(Epos1(:,j),d2f_Epos1(:,j))
-		call Du2Dx_PADE4(Eneg1(:,j),d2f_Eneg1(:,j))
-		call DuDx_UCC_UpWind(Epos1(:,j),d2f_Epos1(:,j),df_Epos1(:,j))
-		call DuDx_UCC_DownWind(Eneg1(:,j),d2f_Eneg1(:,j),df_Eneg1(:,j))
+			call Du2Dx_PADE4(Epos2(:,j),d2f_Epos2(:,j))
+			call Du2Dx_PADE4(Eneg2(:,j),d2f_Eneg2(:,j))
+			call DuDx_UCC_UpWind(Epos2(:,j),d2f_Epos2(:,j),df_Epos2(:,j))
+			call DuDx_UCC_DownWind(Eneg2(:,j),d2f_Eneg2(:,j),df_Eneg2(:,j))
 
-		call Du2Dx_PADE4(Epos2(:,j),d2f_Epos2(:,j))
-		call Du2Dx_PADE4(Eneg2(:,j),d2f_Eneg2(:,j))
-		call DuDx_UCC_UpWind(Epos2(:,j),d2f_Epos2(:,j),df_Epos2(:,j))
-		call DuDx_UCC_DownWind(Eneg2(:,j),d2f_Eneg2(:,j),df_Eneg2(:,j))
+			call Du2Dx_PADE4(Epos3(:,j),d2f_Epos3(:,j))
+			call Du2Dx_PADE4(Eneg3(:,j),d2f_Eneg3(:,j))
+			call DuDx_UCC_UpWind(Epos3(:,j),d2f_Epos3(:,j),df_Epos3(:,j))
+			call DuDx_UCC_DownWind(Eneg3(:,j),d2f_Eneg3(:,j),df_Eneg3(:,j))
 
-		call Du2Dx_PADE4(Epos3(:,j),d2f_Epos3(:,j))
-		call Du2Dx_PADE4(Eneg3(:,j),d2f_Eneg3(:,j))
-		call DuDx_UCC_UpWind(Epos3(:,j),d2f_Epos3(:,j),df_Epos3(:,j))
-		call DuDx_UCC_DownWind(Eneg3(:,j),d2f_Eneg3(:,j),df_Eneg3(:,j))
+			call Du2Dx_PADE4(Epos4(:,j),d2f_Epos4(:,j))
+			call Du2Dx_PADE4(Eneg4(:,j),d2f_Eneg4(:,j))
+			call DuDx_UCC_UpWind(Epos4(:,j),d2f_Epos4(:,j),df_Epos4(:,j))
+			call DuDx_UCC_DownWind(Eneg4(:,j),d2f_Eneg4(:,j),df_Eneg4(:,j))
+		end do
 
-		call Du2Dx_PADE4(Epos4(:,j),d2f_Epos4(:,j))
-		call Du2Dx_PADE4(Eneg4(:,j),d2f_Eneg4(:,j))
-		call DuDx_UCC_UpWind(Epos4(:,j),d2f_Epos4(:,j),df_Epos4(:,j))
-		call DuDx_UCC_DownWind(Eneg4(:,j),d2f_Eneg4(:,j),df_Eneg4(:,j))
-	end do
+	elseif (npx0==1) then
+		do j=1,ny
+			call Du2Dx_PADE4_serial(Epos1(:,j),d2f_Epos1(:,j))
+			call Du2Dx_PADE4_serial(Eneg1(:,j),d2f_Eneg1(:,j))
+			call DuDx_UCC_UpWind_serial(Epos1(:,j),d2f_Epos1(:,j),df_Epos1(:,j))
+			call DuDx_UCC_DownWind_serial(Eneg1(:,j),d2f_Eneg1(:,j),df_Eneg1(:,j))
 
-	call check_xy2d(Fpos1)
-	call check_xy2d(Fpos2)
-	call check_xy2d(Fpos3)
-	call check_xy2d(Fpos4)
+			call Du2Dx_PADE4_serial(Epos2(:,j),d2f_Epos2(:,j))
+			call Du2Dx_PADE4_serial(Eneg2(:,j),d2f_Eneg2(:,j))
+			call DuDx_UCC_UpWind_serial(Epos2(:,j),d2f_Epos2(:,j),df_Epos2(:,j))
+			call DuDx_UCC_DownWind_serial(Eneg2(:,j),d2f_Eneg2(:,j),df_Eneg2(:,j))
 
-	call check_xy2d(Fneg1)
-	call check_xy2d(Fneg2)
-	call check_xy2d(Fneg3)
-	call check_xy2d(Fneg4)
+			call Du2Dx_PADE4_serial(Epos3(:,j),d2f_Epos3(:,j))
+			call Du2Dx_PADE4_serial(Eneg3(:,j),d2f_Eneg3(:,j))
+			call DuDx_UCC_UpWind_serial(Epos3(:,j),d2f_Epos3(:,j),df_Epos3(:,j))
+			call DuDx_UCC_DownWind_serial(Eneg3(:,j),d2f_Eneg3(:,j),df_Eneg3(:,j))
 
-	do i=1,nx
-		call Du2Dy_PADE4(Fpos1(i,:),d2f_Fpos1(i,:))
-		call Du2Dy_PADE4(Fneg1(i,:),d2f_Fneg1(i,:))
-		call DuDy_UCC_UpWind(Fpos1(i,:),d2f_Fpos1(i,:),df_Fpos1(i,:))
-		call DuDy_UCC_DownWind(Fneg1(i,:),d2f_Fneg1(i,:),df_Fneg1(i,:))
+			call Du2Dx_PADE4_serial(Epos4(:,j),d2f_Epos4(:,j))
+			call Du2Dx_PADE4_serial(Eneg4(:,j),d2f_Eneg4(:,j))
+			call DuDx_UCC_UpWind_serial(Epos4(:,j),d2f_Epos4(:,j),df_Epos4(:,j))
+			call DuDx_UCC_DownWind_serial(Eneg4(:,j),d2f_Eneg4(:,j),df_Eneg4(:,j))
+		end do
+	endif
 
-		call Du2Dy_PADE4(Fpos2(i,:),d2f_Fpos2(i,:))
-		call Du2Dy_PADE4(Fneg2(i,:),d2f_Fneg2(i,:))
-		call DuDy_UCC_UpWind(Fpos2(i,:),d2f_Fpos2(i,:),df_Fpos2(i,:))
-		call DuDy_UCC_DownWind(Fneg2(i,:),d2f_Fneg2(i,:),df_Fneg2(i,:))
+	if (npy0 .ne. 1) then
+		call check_y2d(Fpos1)
+		call check_y2d(Fpos2)
+		call check_y2d(Fpos3)
+		call check_y2d(Fpos4)
 
-		call Du2Dy_PADE4(Fpos3(i,:),d2f_Fpos3(i,:))
-		call Du2Dy_PADE4(Fneg3(i,:),d2f_Fneg3(i,:))
-		call DuDy_UCC_UpWind(Fpos3(i,:),d2f_Fpos3(i,:),df_Fpos3(i,:))
-		call DuDy_UCC_DownWind(Fneg3(i,:),d2f_Fneg3(i,:),df_Fneg3(i,:))
+		call check_y2d(Fneg1)
+		call check_y2d(Fneg2)
+		call check_y2d(Fneg3)
+		call check_y2d(Fneg4)
 
-		call Du2Dy_PADE4(Fpos4(i,:),d2f_Fpos4(i,:))
-		call Du2Dy_PADE4(Fneg4(i,:),d2f_Fneg4(i,:))
-		call DuDy_UCC_UpWind(Fpos4(i,:),d2f_Fpos4(i,:),df_Fpos4(i,:))
-		call DuDy_UCC_DownWind(Fneg4(i,:),d2f_Fneg4(i,:),df_Fneg4(i,:))
-	end do
+		do i=1,nx
+			call Du2Dy_PADE4(Fpos1(i,:),d2f_Fpos1(i,:))
+			call Du2Dy_PADE4(Fneg1(i,:),d2f_Fneg1(i,:))
+			call DuDy_UCC_UpWind(Fpos1(i,:),d2f_Fpos1(i,:),df_Fpos1(i,:))
+			call DuDy_UCC_DownWind(Fneg1(i,:),d2f_Fneg1(i,:),df_Fneg1(i,:))
+
+			call Du2Dy_PADE4(Fpos2(i,:),d2f_Fpos2(i,:))
+			call Du2Dy_PADE4(Fneg2(i,:),d2f_Fneg2(i,:))
+			call DuDy_UCC_UpWind(Fpos2(i,:),d2f_Fpos2(i,:),df_Fpos2(i,:))
+			call DuDy_UCC_DownWind(Fneg2(i,:),d2f_Fneg2(i,:),df_Fneg2(i,:))
+
+			call Du2Dy_PADE4(Fpos3(i,:),d2f_Fpos3(i,:))
+			call Du2Dy_PADE4(Fneg3(i,:),d2f_Fneg3(i,:))
+			call DuDy_UCC_UpWind(Fpos3(i,:),d2f_Fpos3(i,:),df_Fpos3(i,:))
+			call DuDy_UCC_DownWind(Fneg3(i,:),d2f_Fneg3(i,:),df_Fneg3(i,:))
+
+			call Du2Dy_PADE4(Fpos4(i,:),d2f_Fpos4(i,:))
+			call Du2Dy_PADE4(Fneg4(i,:),d2f_Fneg4(i,:))
+			call DuDy_UCC_UpWind(Fpos4(i,:),d2f_Fpos4(i,:),df_Fpos4(i,:))
+			call DuDy_UCC_DownWind(Fneg4(i,:),d2f_Fneg4(i,:),df_Fneg4(i,:))
+		end do
+
+	elseif (npy0==1) then
+		do i=1,nx
+			call Du2Dy_PADE4_serial(Fpos1(i,:),d2f_Fpos1(i,:))
+			call Du2Dy_PADE4_serial(Fneg1(i,:),d2f_Fneg1(i,:))
+			call DuDy_UCC_UpWind_serial(Fpos1(i,:),d2f_Fpos1(i,:),df_Fpos1(i,:))
+			call DuDy_UCC_DownWind_serial(Fneg1(i,:),d2f_Fneg1(i,:),df_Fneg1(i,:))
+
+			call Du2Dy_PADE4_serial(Fpos2(i,:),d2f_Fpos2(i,:))
+			call Du2Dy_PADE4_serial(Fneg2(i,:),d2f_Fneg2(i,:))
+			call DuDy_UCC_UpWind_serial(Fpos2(i,:),d2f_Fpos2(i,:),df_Fpos2(i,:))
+			call DuDy_UCC_DownWind_serial(Fneg2(i,:),d2f_Fneg2(i,:),df_Fneg2(i,:))
+
+			call Du2Dy_PADE4_serial(Fpos3(i,:),d2f_Fpos3(i,:))
+			call Du2Dy_PADE4_serial(Fneg3(i,:),d2f_Fneg3(i,:))
+			call DuDy_UCC_UpWind_serial(Fpos3(i,:),d2f_Fpos3(i,:),df_Fpos3(i,:))
+			call DuDy_UCC_DownWind_serial(Fneg3(i,:),d2f_Fneg3(i,:),df_Fneg3(i,:))
+
+			call Du2Dy_PADE4_serial(Fpos4(i,:),d2f_Fpos4(i,:))
+			call Du2Dy_PADE4_serial(Fneg4(i,:),d2f_Fneg4(i,:))
+			call DuDy_UCC_UpWind_serial(Fpos4(i,:),d2f_Fpos4(i,:),df_Fpos4(i,:))
+			call DuDy_UCC_DownWind_serial(Fneg4(i,:),d2f_Fneg4(i,:),df_Fneg4(i,:))
+		end do
+	endif
 
 	R_st=-(df_Epos1+df_Eneg1)-(df_Fpos1+df_Fneg1)
 	R_nd=-(df_Epos2+df_Eneg2)-(df_Fpos2+df_Fneg2)
