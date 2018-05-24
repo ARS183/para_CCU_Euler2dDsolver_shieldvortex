@@ -268,7 +268,26 @@ subroutine DuDx_UCC_UpWind_serial(u,d2f,df)
 
 end subroutine DuDx_UCC_UpWind_serial
 
+!-------------------------------------------------------
+subroutine DuDy_UCC_UpWind_serial(u,d2f,df)
+    include 'openNS3d.h'		
+!	real(kind=OCFD_REAL_KIND)::hx
+    real(kind=OCFD_REAL_KIND)::u(1-LAP:ny+LAP),d2f(1-LAP:ny+LAP)
+    real(kind=OCFD_REAL_KIND)::df(1-LAP:ny+LAP)
+!	integer :: nx
 
+ 
+        call OCFD_DF_BOUND_UCC45(u,df,ny,hy,1)
+
+        call OCFD_DF_BOUND_UCC45(u,df,ny,hy,2)
+
+        call DF_UCC45_P(u,d2f,df,ny,hy,12)
+
+!    deallocate(d2f,df)
+
+end subroutine DuDy_UCC_UpWind_serial
+
+!-----------------------------------------------------------
 
 subroutine DuDx_UCC_DownWind_serial(u,d2f,df)
     include 'openNS3d.h'		
@@ -287,6 +306,26 @@ subroutine DuDx_UCC_DownWind_serial(u,d2f,df)
 !    deallocate(d2f,df)
 
 end subroutine DuDx_UCC_DownWind_serial
+
+!----------------------------------------------------------
+
+subroutine DuDy_UCC_DownWind_serial(u,d2f,df)
+    include 'openNS3d.h'		
+!	real(kind=OCFD_REAL_KIND)::hx
+    real(kind=OCFD_REAL_KIND)::u(1-LAP:ny+LAP),d2f(1-LAP:ny+LAP)
+    real(kind=OCFD_REAL_KIND)::df(1-LAP:ny+LAP)
+!	integer :: nx
+
+        call OCFD_DF_BOUND_UCC45(u,df,ny,hy,1)
+
+        call OCFD_DF_BOUND_UCC45(u,df,ny,hy,2)
+  
+        call DF_UCC45_M(u,d2f,df,ny,hy,12)
+
+
+!    deallocate(d2f,df)
+
+end subroutine DuDy_UCC_DownWind_serial
 
 !
 !============================================================
